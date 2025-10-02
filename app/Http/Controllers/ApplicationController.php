@@ -8,14 +8,12 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use App\Mail\GeneratedApplication;
 use App\Models\Application;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use Illuminate\Support\Facades\Auth;
-use App\Jobs\GenerateApplication;
-use Dompdf\Dompdf;
-use Dompdf\Options;
-use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Shared\Html;
 
 class ApplicationController extends Controller
 {
@@ -138,7 +136,7 @@ class ApplicationController extends Controller
         $role = $request->input('role', 'General');
         $prompt = $this->buildPdfFriendlyPrompt($role, $sourceText);
 
-        Log::info("Prompt generated", [$prompt]);
+        // Log::info("Prompt generated", [$prompt]);
 
         // Step 3: Call OpenAI Chat Completions (raw HTTP)
         try {
@@ -171,26 +169,12 @@ class ApplicationController extends Controller
         }
 
         // Step 4: Sanitize / clean the HTML (use HTMLPurifier if available)
-        $cleanHtml = $html;// $this->sanitizeHtml($html);
-        // $cleanHtml = trim($cleanHtml, "```");
-        // Step 5: Save HTML and generate PDF
-        $basename = 'resume_'.time().'_'.uniqid();
-        $pdfFilename  = "resumes/{$basename}.pdf";
-
+        $cleanJson = trim($html, "` \n\r\t");
+        $cleanJson = preg_replace('/^json/', '', $cleanJson); 
         $application->update([
-            "body" => $pdfFilename,
+            "body" => $cleanJson,
             "meta" => ["status" => "ready"]
         ]);
-
-        // Generate PDF using DomPDF
-        try {
-            $pdf = Pdf::loadHTML($cleanHtml)->setPaper('a4')->setWarnings(false);
-            Storage::disk("public")->put($pdfFilename, $pdf->output());
-        } catch (\Throwable $e) {
-            Log::error('PDF generation failed: '.$e->getMessage());
-            // still save HTML and continue (return HTML download)
-            $pdfFilename = null;
-        }
         return to_route('applications.index');
     }
 
@@ -269,132 +253,84 @@ You are a professional resume formatting assistant.
 
 I will provide:
 1. Resume content (text extracted from file or image).  
-2. An HTML template with placeholders.  
+2. A JSON format to derive from the contents provided.  
 
 Your task: 
-- Analyse and polish the resume content.  
-- Replace the placeholders with refined resume content.  
-- Keep the ENTIRE HTML exactly as provided, including the <html>, <head>, <style>, and <body> tags.  
-- Do not strip out or modify any CSS styles.  
-- Return the completed HTML as-is, ready to be converted into a PDF. 
+- Analyse and polish the resume content.
+- Use the analysed content to bring out output in the JSON format i provided.
+- Do all you can to make sure information that are array as lot of items in them
+- Leave any data you can't find empty or suggest the data that can be in it
+- For the job application section, check if there's any content that shows job application otherwise imagine yourself applying to a role that fits the resume
+- the cover_letter should be 180-190 words
+- the professional_exerience date format should be in mm/yyyy
+- i would love it if you won't leave any data empty, just suggest/predict what could be in it
+- all content should be in german
+- Output the JSOn as it is, don't interfere with it
 Target role: {$role}
 
 SOURCE_RESUME:
 {$sourceText}
 
-HTML TEMPLATE:
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
-<head>
-<title>static/downloads/acee506b-0671-4de3-8924-c3edc9770f24/Vorlage-Zander-Rohan-html.html</title>
+JSON:
 
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
- <br/>
-<style type="text/css">
-<!--
-	p {margin: 0; padding: 0;}	.ft10{font-size:54px;font-family:BCDEEE+Calibri;color:#ffffff;}
-	.ft11{font-size:17px;font-family:BCDEEE+Calibri;color:#000000;}
-	.ft12{font-size:24px;font-family:BCDEEE+Calibri;color:#ffffff;}
-	.ft13{font-size:18px;font-family:BCDEEE+Calibri;color:#ffffff;}
-	.ft14{font-size:33px;font-family:BCDFEE+Montserrat;color:#58687c;}
-	.ft15{font-size:21px;font-family:BCDEEE+Calibri;color:#3b3b39;}
-	.ft16{font-size:21px;line-height:46px;font-family:BCDEEE+Calibri;color:#3b3b39;}
--->
-</style>
-</head>
-<body bgcolor="#A0A0A0" vlink="blue" link="blue">
-<div id="page1-div" style="position:relative;width:892px;height:1262px;">
-<img width="892" height="1262" src="https://absamtech.online/ai-bg.png" />
-<p style="position:absolute;top:694px;left:39px;white-space:nowrap" class="ft10">Bewerbungsunterlagen&#160;</p>
-<p style="position:absolute;top:3px;left:0px;white-space:nowrap" class="ft11">&#160;</p>
-<p style="position:absolute;top:41px;left:0px;white-space:nowrap" class="ft11">&#160;</p>
-<p style="position:absolute;top:41px;left:216px;white-space:nowrap" class="ft11">&#160;</p>
-<p style="position:absolute;top:121px;left:838px;white-space:nowrap" class="ft12">2025&#160;</p>
-<p style="position:absolute;top:1001px;left:40px;white-space:nowrap" class="ft16">V&#160;O&#160;R&#160;N&#160;A&#160;M&#160;E&#160;&#160;&#160;N&#160;A&#160;C&#160;H&#160;N&#160;A&#160;M&#160;E&#160;&#160;<br/>TONIS&#160;BEWERBUNGSHILFE&#160;</p>
-</div>
-</body>
-</html>
-
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>{{name}} — Revamped CV</title>
-<style>
-  :root{--accent:#58687c;--muted:#3b3b39;--bg:#f4f6f8;--card:#ffffff;}
-  body{font-family: Arial, Helvetica, sans-serif; background:var(--bg); color:var(--muted); margin:0; padding:30px;}
-  .container{max-width:900px;margin:0 auto;background:var(--card);box-shadow:0 8px 30px rgba(0,0,0,0.08);display:flex;overflow:hidden;}
-  .left{width:260px;background:#fbfcfd;padding:28px;border-right:1px solid #eee;}
-  .right{flex:1;padding:32px;}
-  .name{font-size:24px;color:#1f2937;font-weight:700;margin-bottom:6px;}
-  .title{color:var(--accent);font-size:14px;margin-bottom:16px;}
-  .contact{font-size:12px;color:#555;margin-bottom:18px;line-height:1.4;}
-  h3.section{font-size:13px;color:var(--accent);letter-spacing:2px;margin:18px 0 8px;}
-  .muted{font-size:12px;color:#58687c;margin-bottom:6px;}
-  .list{font-size:13px;line-height:1.45;margin:6px 0 0;}
-  .skill{background:#eef2f6;padding:6px 8px;border-radius:6px;display:inline-block;margin:4px 6px 6px 0;font-size:12px;color:#274156;}
-  .exp{margin-bottom:12px;}
-  .exp .role{font-weight:700;color:#17202a;}
-  .exp .meta{font-size:12px;color:#6b7280;margin-bottom:6px;}
-  .bullet{margin-left:12px;margin-bottom:6px;font-size:13px;color:#394042;}
-  .edu, .project{margin-bottom:10px;}
-  .footer-note{font-size:11px;color:#6b7280;margin-top:18px;}
-  @media(max-width:880px){.container{flex-direction:column}.left{width:100%;border-right:none;border-bottom:1px solid #eee}}
-</style>
-</head>
-<body>
-<div class="container" role="main" aria-label="Curriculum Vitae">
-  <aside class="left" aria-label="Quick info">
-    <div class="name">{{name}}</div>
-    <div class="title">{{title}}</div>
-    <div class="contact">
-      {{location}}<br/>
-      Email: {{email}}<br/>
-      Phone: {{phone}}
-    </div>
-
-    <h3 class="section">LANGUAGES</h3>
-    {{languages}}
-
-    <h3 class="section">CERTIFICATIONS</h3>
-    {{certifications}}
-
-    <h3 class="section">SKILLS</h3>
-    <div style="margin-top:8px;">
-      {{skills}}
-    </div>
-
-    <h3 class="section">INTERESTS</h3>
-    {{interests}}
-  </aside>
-
-  <section class="right" aria-label="Main content">
-    <div role="region" aria-label="Profile summary">
-      <p class="muted"><strong>PROFILE</strong></p>
-      <p style="font-size:14px;color:#273036;line-height:1.5;margin-top:6px;">
-        {{profile}}
-      </p>
-    </div>
-
-    <h3 class="section" style="margin-top:18px;">WORK EXPERIENCE</h3>
-    {{experience}}
-
-    <h3 class="section" style="margin-top:10px;">EDUCATION</h3>
-    {{education}}
-
-    <h3 class="section">PROJECTS & ACHIEVEMENTS</h3>
-    {{projects}}
-
-    <p class="footer-note">{{footer}}</p>
-  </section>
-</div>
-</body>
-</html>
-
-
-
-Now produce only the final HTML.
+{
+    "lastname":"",
+    "firstname": "",
+    "middlename": "",
+    "address": "",
+    "place_of_residence": "",
+    "email": "",
+    "place_of_birth": "",
+    "phone_number": "",
+    "date_of_birth": "",
+    "nationality": "",
+    "martial_status": "",
+    "short_bio": "",
+    "job_application": {
+        "job_title": "",
+        "company_name": "",
+        "company_location": "",
+        "date": "",
+        "company_zipcode": "",
+        "employer_name": "",
+        "cover_letter": ""
+    },
+    "expertises": [],
+    "professional_experience": [
+        {
+            "start_date": "",
+            "end_date": "",
+            "position": "",
+            "job_title": "",
+            "company": "",
+            "company_location": "",
+            "achievements": []
+        }
+    ],
+    "skills": [],
+    "linkedin_link": "",
+    "professional_summary": "",
+    "soft_skills": [],
+    "professional_skills": [],
+    "languages": [
+        {
+            "language":"",
+            "proficiency_level": ""
+        }
+    ],
+    "certifications": [],
+    "education": [
+        {
+            "start_date": "",
+            "end_date": "",
+            "degree_held": "",
+            "courses_studied": []
+        }
+    ],
+    "interests": [],
+    "other_hobbies": []
+}
+Now produce only the final JSON.
 PROMPT;
         return $prompt;
     }
@@ -539,49 +475,67 @@ PROMPT;
     public function preview(Application $application)
     {
         $this->authorize('view', $application);
-        $name = $application->name;
-        $date = now()->format('Y-m-d');
-        // Always prefer rendering the exact multi-page HTML template if present
-        $tpl = base_path('doc/Vorlage-Zander-Rohan-html.html');
-        if (is_file($tpl)) {
-            $body = @file_get_contents($tpl) ?: '';
-        } else {
-            $body = $application->body ?: '<p>No content available.</p>';
-        }
-        return view('application.preview', compact('name', 'date', 'body', 'application'));
+        $body = $application->body;
+        $data = json_decode($body, true);
+        return view('application.pdf', ["data" => $data]);
     }
+
+    
 
     public function pdf(Application $application)
     {
         $this->authorize('view', $application);
         // Render current HTML body to PDF on-the-fly for download
         $body = $application->body ?? '';
-        return Storage::disk("public")->download($body, "application.pdf");
+        $rsData = json_decode($body, true);
+        try {
+            $pdf = PDF::loadView('application.pdf', ["data" => $rsData])
+                   ->setPaper('a4')
+                    ->setOption('margin-top', 15)
+                    ->setOption('margin-bottom', 15)
+                    ->setOption('margin-left', 15)
+                    ->setOption('margin-right', 15)
+                    ->setOption('enable-javascript', true)
+                    ->setOption('javascript-delay', 1000) // wait for assets
+                    ->setOption('no-stop-slow-scripts', true)
+                    ->setOption('enable-smart-shrinking', true);
+            return $pdf->download("ai-resume.pdf");
+        } catch (\Throwable $e) {
+            Log::error('PDF generation failed: '.$e->getMessage());
+            $pdfFilename = null;
+        }
+    }
 
-        // dd($path);
-        // if (stripos($body, '<html') !== false) {
-        //     $html = $body;
-        // } else {
-        //     $html = view('application.pdf', [
-        //         'name' => $application->name,
-        //         'date' => now()->format('Y-m-d'),
-        //         'body' => $body,
-        //         'headerBg' => data_get($application->meta, 'header_bg_data'),
-        //     ])->render();
-        // }
+    public function docx(Application $application)
+    {
+        $this->authorize('view', $application);
+        // Render current HTML body to PDF on-the-fly for download
+        $body = $application->body ?? '';
+        $rsData = json_decode($body, true);
+        try {
 
-        // $options = new Options();
-        // // Allow remote assets (e.g., header background images) when rendering PDFs
-        // $options->set('isRemoteEnabled', true);
-        // $options->set('isHtml5ParserEnabled', true);
-        // $dompdf = new Dompdf($options);
-        // $dompdf->loadHtml($html);
-        // $dompdf->setPaper('A4');
-        // $dompdf->render();
-        // return response($path, 200, [
-        //     'Content-Type' => 'application/pdf',
-        //     'Content-Disposition' => 'attachment; filename="application.pdf"',
-        // ]);
+            $phpWord = new PhpWord();
+
+            $section = $phpWord->addSection();
+
+            // Render Blade to HTML
+            $data = json_decode($body, true);
+            $html = view('application.docx', ["data" => $data])->render();
+
+            Html::addHtml($section, $html, false, false);
+
+            // Save DOCX
+            $fileName = 'resume-'.time().'docx';
+            $filePath = storage_path("app/public/resumes/{$fileName}");
+            $writer = IOFactory::createWriter($phpWord, 'Word2007');
+            $writer->save($filePath);
+            return response()->download($filePath);//->deleteFileAfterSend(true);
+            
+        } catch (\Throwable $e) {
+            dd("HTML broke:", $html, $e->getMessage());
+            Log::error('DOCS generation failed: '.$e->getMessage());
+            $pdfFilename = null;
+        }
     }
 
     public function destroy(Application $application)

@@ -51,11 +51,13 @@
                                 <div class="flex items-center gap-2 shrink-0">
                                     @php($status = data_get($app->meta, 'status'))
                                     @php($canDownload = $status === 'ready')
-                                    {{-- <a class="px-3 py-1.5 text-sm rounded-md border hover:bg-gray-50" href="{{ route('applications.preview', $app) }}">Preview</a> --}}
+                                    <a target="_blank" class="px-3 py-1.5 text-sm rounded-md border hover:bg-gray-50" href="{{ route('applications.preview', $app) }}">Preview</a>
                                     @if($canDownload)
                                         <a class="px-3 py-1.5 text-sm rounded-md border hover:bg-gray-50" href="{{ route('applications.pdf', $app) }}">Download PDF</a>
+                                        <a class="px-3 py-1.5 text-sm rounded-md border hover:bg-gray-50" href="{{ route('applications.docx', $app) }}">Download DOCX</a>
                                     @else
                                         <button class="px-3 py-1.5 text-sm rounded-md border text-gray-400 cursor-not-allowed" disabled>Download PDF</button>
+                                        <button class="px-3 py-1.5 text-sm rounded-md border text-gray-400 cursor-not-allowed" disabled>Download DOCX</button>
                                     @endif
                                     <form action="{{ route('applications.destroy', $app) }}" method="POST" onsubmit="return confirm('Delete this application?');">
                                         @csrf

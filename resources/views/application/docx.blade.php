@@ -1,51 +1,4 @@
-<!DOCTYPE html>
-
-<html lang="en">
-
-<head>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-         .page-break {
-            page-break-after: always; /* forces content after to start on new page */
-        }
-        .icon-box{
-            display:flex;
-            margin: 0;
-            align-items:center;
-        }
-        .icon-box .icon{
-            margin-right: 7px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table th, table td {
-            padding: 8px;
-        }
-        /* ✅ Prevent splitting rows */
-        tr {
-            page-break-inside: avoid;
-        }
-        thead {
-            display: table-header-group;
-        }
-        tfoot {
-            display: table-footer-group;
-        }
-    </style>
-</head>
-
-<body style="font-family: 'Montserrat', sans-serif; margin: 0px; padding: 0px;">
+<section style="font-family: 'Montserrat', sans-serif; margin: 0px; padding: 0px;">
 
     <img src="https://absamtech.online/ai-head-img.png" style="top:0;right:0;z-index: 1;position: absolute; width: 75px;" />
     <img style="width: 100%;" src="https://absamtech.online/ai-bg.png" />
@@ -65,7 +18,8 @@
                         style="margin-left: 27px;">{{$data["address"] ?? ''}}</span></td>
                 <td style="padding: 10px; color: #a5a5a3;">
                     
-                    <b>GEBURTSTAG</b><span
+                    <b>GEBURTSTAG</b>
+                    <span
                         style="margin-left: 38px;">{{$data["date_of_birth"] ?? ''}}</span>
                     <span>
                         <svg style="opacity:0.3;" version="1.1" id="Uploaded to svgrepo.com" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20px" height="20px" viewBox="0 0 32 32" xml:space="preserve" fill="none"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <style type="text/css"> .feather_een{fill:#0B1719;} </style> <path class="feather_een" d="M28,9.5C28,3.552,25.196,0,20.5,0c-3.114,0-5.377,1.581-6.561,4.368C13.197,4.125,12.382,4,11.5,4 C6.804,4,4,7.552,4,13.5c0,4.363,2.949,7.496,6.033,8.299l-0.431,0.646c-0.205,0.308-0.224,0.701-0.049,1.026 C9.727,23.798,10.065,24,10.434,24h0.505c-0.124,0.527-0.439,0.856-0.824,1.239C9.593,25.762,9,26.354,9,27.5 c0,1.152,0.599,1.764,1.127,2.303C10.615,30.301,11,30.693,11,31.5c0,0.276,0.224,0.5,0.5,0.5s0.5-0.224,0.5-0.5 c0-1.215-0.643-1.87-1.159-2.397C10.371,28.623,10,28.244,10,27.5c0-0.731,0.363-1.094,0.822-1.553 c0.451-0.45,0.993-0.998,1.138-1.947h0.606c0.369,0,0.707-0.202,0.881-0.528c0.174-0.325,0.156-0.719-0.049-1.026l-0.431-0.646 c2.039-0.531,4.014-2.085,5.121-4.335c0.312,0.133,0.627,0.252,0.945,0.335l-0.431,0.646c-0.205,0.308-0.224,0.701-0.049,1.026 C18.727,19.798,19.065,20,19.434,20h0.606c0.145,0.949,0.687,1.497,1.138,1.947C21.637,22.406,22,22.769,22,23.5 c0,0.744-0.371,1.123-0.841,1.603C20.643,25.63,20,26.285,20,27.5c0,0.276,0.224,0.5,0.5,0.5s0.5-0.224,0.5-0.5 c0-0.807,0.385-1.199,0.873-1.697C22.401,25.264,23,24.652,23,23.5c0-1.146-0.593-1.738-1.115-2.261 c-0.385-0.384-0.7-0.712-0.824-1.239h0.505c0.369,0,0.707-0.202,0.881-0.528c0.174-0.325,0.156-0.719-0.049-1.026l-0.431-0.646 C25.051,16.996,28,13.863,28,9.5z M10.434,23l1.066-1.6l1.066,1.6H10.434z M12.07,20.957l-0.57,0.076l-0.57-0.076 C8.468,20.631,5,18.101,5,13.5C5,10.944,5.633,5,11.5,5s6.5,5.944,6.5,8.5C18,18.101,14.532,20.631,12.07,20.957z M19.434,19 l1.066-1.6l1.066,1.6H19.434z M21.07,16.957l-0.57,0.076l-0.57-0.076c-0.454-0.06-0.945-0.221-1.44-0.431 C18.815,15.606,19,14.591,19,13.5c0-4.347-1.503-7.407-4.143-8.743C15.694,2.751,17.32,1,20.5,1C26.367,1,27,6.944,27,9.5 C27,14.101,23.532,16.631,21.07,16.957z M9,7C7.895,7,7,7.895,7,9s0.895,2,2,2c1.105,0,2-0.895,2-2S10.105,7,9,7z M9,10 c-0.551,0-1-0.449-1-1s0.449-1,1-1s1,0.449,1,1S9.551,10,9,10z"></path> </g></svg>
@@ -77,11 +31,13 @@
                     <span>
                     <svg style="opacity:0.3;" width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M1.58594 10.5453L10.9393 1.43968C11.0786 1.30029 11.244 1.18971 11.426 1.11427C11.6081 1.03883 11.8032 1 12.0003 1C12.1973 1 12.3925 1.03883 12.5745 1.11427C12.7566 1.18971 12.922 1.30029 13.0613 1.43968L22.4146 10.5453" stroke="#71717A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M16.5 4.62866V3.12866H20V7.84375" stroke="#71717A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M3 9.5V18.069V21.6552C3 22.0118 3.1724 22.3539 3.47928 22.6061C3.78616 22.8583 4.20237 23 4.63636 23H19.3636C19.7976 23 20.2138 22.8583 20.5207 22.6061C20.8276 22.3539 21 22.0118 21 21.6552V9.5" stroke="#71717A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M15 23V18C15 16.3431 13.6569 15 12 15V15C10.3431 15 9 16.3431 9 18V23" stroke="#71717A" stroke-width="1.5"></path> <path d="M9 10.25C8.58579 10.25 8.25 10.5858 8.25 11C8.25 11.4142 8.58579 11.75 9 11.75V10.25ZM15 11.75C15.4142 11.75 15.75 11.4142 15.75 11C15.75 10.5858 15.4142 10.25 15 10.25V11.75ZM9 11.75H15V10.25H9V11.75Z" fill="#71717A"></path> <path d="M9 7.25C8.58579 7.25 8.25 7.58579 8.25 8C8.25 8.41421 8.58579 8.75 9 8.75V7.25ZM15 8.75C15.4142 8.75 15.75 8.41421 15.75 8C15.75 7.58579 15.4142 7.25 15 7.25V8.75ZM9 8.75H15V7.25H9V8.75Z" fill="#71717A"></path> </g></svg>
                     </span>
-                    <b>WOHNORT</b><span
+                    <b>WOHNORT</b>
+                    <span
                         style="margin-left: 15px;">{{ $data["place_of_residence"] ?? ''}}</span></td>
                 <td style="padding: 10px; color: #a5a5a3;">
                     
-                    <b>GEBURTSORT</b><span
+                    <b>GEBURTSORT</b>
+                    <span
                         style="margin-left: 37px;">{{$data["date_of_birth"] ?? ''}}</span>
                     <span>
                         <svg style="opacity:0.3;" version="1.1" id="Uploaded to svgrepo.com" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20px" height="20px" viewBox="0 0 32 32" xml:space="preserve" fill="none"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <style type="text/css"> .feather_een{fill:#0B1719;} </style> <path class="feather_een" d="M28,9.5C28,3.552,25.196,0,20.5,0c-3.114,0-5.377,1.581-6.561,4.368C13.197,4.125,12.382,4,11.5,4 C6.804,4,4,7.552,4,13.5c0,4.363,2.949,7.496,6.033,8.299l-0.431,0.646c-0.205,0.308-0.224,0.701-0.049,1.026 C9.727,23.798,10.065,24,10.434,24h0.505c-0.124,0.527-0.439,0.856-0.824,1.239C9.593,25.762,9,26.354,9,27.5 c0,1.152,0.599,1.764,1.127,2.303C10.615,30.301,11,30.693,11,31.5c0,0.276,0.224,0.5,0.5,0.5s0.5-0.224,0.5-0.5 c0-1.215-0.643-1.87-1.159-2.397C10.371,28.623,10,28.244,10,27.5c0-0.731,0.363-1.094,0.822-1.553 c0.451-0.45,0.993-0.998,1.138-1.947h0.606c0.369,0,0.707-0.202,0.881-0.528c0.174-0.325,0.156-0.719-0.049-1.026l-0.431-0.646 c2.039-0.531,4.014-2.085,5.121-4.335c0.312,0.133,0.627,0.252,0.945,0.335l-0.431,0.646c-0.205,0.308-0.224,0.701-0.049,1.026 C18.727,19.798,19.065,20,19.434,20h0.606c0.145,0.949,0.687,1.497,1.138,1.947C21.637,22.406,22,22.769,22,23.5 c0,0.744-0.371,1.123-0.841,1.603C20.643,25.63,20,26.285,20,27.5c0,0.276,0.224,0.5,0.5,0.5s0.5-0.224,0.5-0.5 c0-0.807,0.385-1.199,0.873-1.697C22.401,25.264,23,24.652,23,23.5c0-1.146-0.593-1.738-1.115-2.261 c-0.385-0.384-0.7-0.712-0.824-1.239h0.505c0.369,0,0.707-0.202,0.881-0.528c0.174-0.325,0.156-0.719-0.049-1.026l-0.431-0.646 C25.051,16.996,28,13.863,28,9.5z M10.434,23l1.066-1.6l1.066,1.6H10.434z M12.07,20.957l-0.57,0.076l-0.57-0.076 C8.468,20.631,5,18.101,5,13.5C5,10.944,5.633,5,11.5,5s6.5,5.944,6.5,8.5C18,18.101,14.532,20.631,12.07,20.957z M19.434,19 l1.066-1.6l1.066,1.6H19.434z M21.07,16.957l-0.57,0.076l-0.57-0.076c-0.454-0.06-0.945-0.221-1.44-0.431 C18.815,15.606,19,14.591,19,13.5c0-4.347-1.503-7.407-4.143-8.743C15.694,2.751,17.32,1,20.5,1C26.367,1,27,6.944,27,9.5 C27,14.101,23.532,16.631,21.07,16.957z M9,7C7.895,7,7,7.895,7,9s0.895,2,2,2c1.105,0,2-0.895,2-2S10.105,7,9,7z M9,10 c-0.551,0-1-0.449-1-1s0.449-1,1-1s1,0.449,1,1S9.551,10,9,10z"></path> </g></svg>
@@ -396,6 +352,4 @@
             </td>
         </tr>
     </table>
-</body>
-
-</html>
+</section>

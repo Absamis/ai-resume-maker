@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
     Route::get('/applications/{application}', [ApplicationController::class, 'preview'])->name('applications.preview');
     Route::get('/applications/{application}/pdf', [ApplicationController::class, 'pdf'])->name('applications.pdf');
+    Route::get('/applications/{application}/docx', [ApplicationController::class, 'docx'])->name('applications.docx');
     Route::delete('/applications/{application}', [ApplicationController::class, 'destroy'])->name('applications.destroy');
 });
 
