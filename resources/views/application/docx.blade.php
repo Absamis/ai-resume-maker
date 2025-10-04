@@ -59,7 +59,7 @@
 
     {{-- THIRD LAYER  --}}
     <div>
-        <p style="text-align: center; color: #5a677d;"><b>BERUFLICHER WERDEGANG</b></p>
+        <p style="margin:10px 0px; color: #5a677d;"><b>BERUFLICHER WERDEGANG</b></p>
 
         <ul>
             @foreach ($data["professional_experience"] as $exp)
@@ -70,7 +70,7 @@
             @endforeach
         </ul>
 
-        <p style="text-align: center; color: #5a677d;"><b>SKILL SET</b></p>
+        <p style="margin:10px 0px; color: #5a677d;"><b>SKILL SET</b></p>
 
         <ul>
             @foreach (($data["skills"] ?? []) as $sk)
@@ -81,17 +81,17 @@
 
     {{-- FORTH LAYER  --}}
     <div>
-        <div>
+        <div style="margin:10px 0px; ">
             <p style="text-transform: uppercase; font-size: 24px; color: #5a677d;">
                 {{$data["lastname"]. " ". $data["firstname"]}}
             </p>
-            <p>
+            <p style="margin:5px 0px; ">
                 {{$data["short_bio"] ?? ''}}
             </p>
         </div>
 
         <div>
-            <table style="width: 100%;">
+            <table style="width: 100%;margin:10px 0px; ">
                 <tr>
                     <td>{{$data["phone_number"] ?? ''}}</td>
                     <td>{{$data["email"] ?? ''}}</td>
@@ -133,14 +133,14 @@
 
     {{-- FITH LAYER  --}}
     <div>
-        <div style="padding: 0px 20px;">
+        <div style="padding: 0px 20px;margin:10px 0px; ">
             <p style="text-transform: uppercase; font-size: 40px; margin-top: 3em; color: #5a677d;">
                 {{$data["lastname"]}}<br/>{{$data["firstname"]}}
             </p>
             <p style="font-size:18px;">{{$data["short_bio"] ?? ''}}</p>
         </div>
 
-        <div style="padding: 0px 20px;">
+        <div style="padding: 0px 20px;margin:10px 0px; ">
             <table style="width: 100%; border-top: 2px solid #666; border-bottom: 1px solid #666;">
                 <tr>
                     <td style="padding: 10px; text-align: left;">
@@ -164,7 +164,7 @@
 
     {{-- SIXTH LAYER  --}}
     <div>
-        <table style="width: 100%; border-collapse: collapse;">
+        <table style="width: 100%; border-collapse: collapse;margin:10px 0px; ">
             <tr>
                 <!-- LEFT COLUMN -->
                 <td style="width: 35%; padding: 15px; border-right: 1px solid #666; vertical-align: top;">
