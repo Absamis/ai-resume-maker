@@ -367,7 +367,7 @@
             <td style="width: 70%;padding: 15px; vertical-align: top;">
                 <p style="font-size: 25px; color: #5a677d; margin-top: -15px">BERUFSERFAHRUNG</p>
                 @foreach ($data["professional_experience"] as $exp)
-                <div style="margin-left: 0px;">
+                <div style="margin-left: -50px;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 50"
                         style="width:360px; height:50px; display:block;">
                         <!-- Linie + Pfeil, links offen -->

@@ -525,16 +525,17 @@ PROMPT;
             Html::addHtml($section, $html, false, false);
 
             // Save DOCX
-            $fileName = 'resume-'.time().'docx';
+            $fileName = 'resume-'.time().'.docx';
             $filePath = storage_path("app/public/resumes/{$fileName}");
             $writer = IOFactory::createWriter($phpWord, 'Word2007');
             $writer->save($filePath);
             return response()->download($filePath);//->deleteFileAfterSend(true);
             
         } catch (\Throwable $e) {
-            dd("HTML broke:", $html, $e->getMessage());
+            // dd("HTML broke:", $html, $e->getMessage());
             Log::error('DOCS generation failed: '.$e->getMessage());
             $pdfFilename = null;
+            return back()->with("error", "Operation failed. Try again");
         }
     }
 
