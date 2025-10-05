@@ -261,7 +261,7 @@ Your task:
 - Do all you can to make sure information that are array as lot of items in them
 - Leave any data you can't find empty or suggest the data that can be in it
 - For the job application section, check if there's any content that shows job application otherwise imagine yourself applying to a role that fits the resume
-- the cover_letter should be 180-190 words
+- the cover_letter should be 2000-2500 words. you can group them in 2-3 paragraphs.
 - the professional_exerience date format should be in mm/yyyy
 - i would love it if you won't leave any data empty, just suggest/predict what could be in it
 - all content should be in german
