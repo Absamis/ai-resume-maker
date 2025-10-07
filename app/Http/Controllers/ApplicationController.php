@@ -533,7 +533,7 @@ PROMPT;
                 @unlink($htmlPath);
                 return response()->download($docxPath)->deleteFileAfterSend(true);
             } else{
-                Log::error("LibreOffice conversion failed", ['output' => $htmlPath]);
+                Log::error('DOCX conversion failed', ['output' => $output]);
                 return back()->with("error", "Could not generate docx file");
             }
             
