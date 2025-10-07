@@ -517,10 +517,16 @@ PROMPT;
 
             $htmlPath = storage_path('app/public/resumes/resume-' . time() . '.html');
             file_put_contents($htmlPath, $html);
-
             $docxPath = str_replace('.html', '.docx', $htmlPath);
+            $templatePath = storage_path('app/public/resumes/custom-reference.docx');
 
-            $cmd = sprintf('pandoc %s -o %s', escapeshellarg($htmlPath), escapeshellarg($docxPath));
+            $cmd = sprintf(
+                'pandoc %s -o %s --reference-doc=%s --extract-media=%s',
+                escapeshellarg($htmlPath),
+                escapeshellarg($docxPath),
+                escapeshellarg($templatePath),
+                escapeshellarg(storage_path('app/public/resumes/media'))
+            );
             exec($cmd, $output, $status);
 
             if ($status === 0 && file_exists($docxPath)) {
