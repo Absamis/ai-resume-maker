@@ -513,23 +513,23 @@ PROMPT;
         $body = $application->body ?? '';
         $rsData = json_decode($body, true);
         try {
+            $html = view('application.pdf', ["data" => $rsData])->render();
 
-            $phpWord = new PhpWord();
+            $htmlPath = storage_path('app/public/resumes/resume-' . time() . '.html');
+            file_put_contents($htmlPath, $html);
 
-            $section = $phpWord->addSection();
+            $docxPath = str_replace('.html', '.docx', $htmlPath);
 
-            // Render Blade to HTML
-            $data = json_decode($body, true);
-            $html = view('application.docx', ["data" => $data])->render();
+            $cmd = sprintf('pandoc %s -o %s', escapeshellarg($htmlPath), escapeshellarg($docxPath));
+            exec($cmd, $output, $status);
 
-            Html::addHtml($section, $html, false, false);
-
-            // Save DOCX
-            $fileName = 'resume-'.time().'.docx';
-            $filePath = storage_path("app/public/resumes/{$fileName}");
-            $writer = IOFactory::createWriter($phpWord, 'Word2007');
-            $writer->save($filePath);
-            return response()->download($filePath);//->deleteFileAfterSend(true);
+            if ($status === 0 && file_exists($docxPath)) {
+                @unlink($htmlPath);
+                return response()->download($docxPath)->deleteFileAfterSend(true);
+            } else{
+                Log::error("LibreOffice conversion failed", ['output' => $htmlPath]);
+                return back()->with("error", "Could not generate docx file");
+            }
             
         } catch (\Throwable $e) {
             // dd("HTML broke:", $html, $e->getMessage());
