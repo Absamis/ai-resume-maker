@@ -31,6 +31,9 @@
 
                 <div class="bg-white rounded-lg shadow">
                     <div class="p-4 border-b font-medium">Your generated applications</div>
+                    @if(session("error"))
+                    <p class="p-6 text-red-700">{{ session("error") }}</p>
+                    @endif 
                     <div class="divide-y">
                         @forelse($applications as $app)
                             <div class="p-4 flex items-center justify-between gap-4">

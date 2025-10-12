@@ -485,21 +485,26 @@ PROMPT;
     public function pdf(Application $application)
     {
         $this->authorize('view', $application);
+        $user = auth()->user();
         // Render current HTML body to PDF on-the-fly for download
         $body = $application->body ?? '';
         $rsData = json_decode($body, true);
         try {
-            $pdf = PDF::loadView('application.pdf', ["data" => $rsData])
-                   ->setPaper('a4')
-                    ->setOption('margin-top', 15)
-                    ->setOption('margin-bottom', 15)
-                    ->setOption('margin-left', 15)
-                    ->setOption('margin-right', 15)
-                    ->setOption('enable-javascript', true)
-                    ->setOption('javascript-delay', 1000) // wait for assets
-                    ->setOption('no-stop-slow-scripts', true)
-                    ->setOption('enable-smart-shrinking', true);
-            return $pdf->download("ai-resume.pdf");
+            $pdfPath = $pdfPath = storage_path('app/public/resumes/resume-' . $user->id. $application->id . '.pdf');
+            if(!file_exists($pdfPath)){
+                $pdf = PDF::loadView('application.pdf', ["data" => $rsData])
+                    ->setPaper('a4')
+                        ->setOption('margin-top', 15)
+                        ->setOption('margin-bottom', 15)
+                        ->setOption('margin-left', 15)
+                        ->setOption('margin-right', 15)
+                        ->setOption('enable-javascript', true)
+                        ->setOption('javascript-delay', 1000) // wait for assets
+                        ->setOption('no-stop-slow-scripts', true)
+                        ->setOption('enable-smart-shrinking', true);
+                $pdf->save($pdfPath);
+            }
+            return response()->download($pdfPath);
         } catch (\Throwable $e) {
             Log::error('PDF generation failed: '.$e->getMessage());
             $pdfFilename = null;
@@ -510,33 +515,47 @@ PROMPT;
     {
         $this->authorize('view', $application);
         // Render current HTML body to PDF on-the-fly for download
+        $user = auth()->user();
         $body = $application->body ?? '';
         $rsData = json_decode($body, true);
         try {
-            $html = view('application.pdf', ["data" => $rsData])->render();
 
-            $htmlPath = storage_path('app/public/resumes/resume-' . time() . '.html');
-            file_put_contents($htmlPath, $html);
-            $docxPath = str_replace('.html', '.docx', $htmlPath);
-            $templatePath = storage_path('app/public/resumes/custom-reference.docx');
-
-            $cmd = sprintf(
-                'pandoc %s -o %s --reference-doc=%s --extract-media=%s',
-                escapeshellarg($htmlPath),
-                escapeshellarg($docxPath),
-                escapeshellarg($templatePath),
-                escapeshellarg(storage_path('app/public/resumes/media'))
-            );
-            exec($cmd, $output, $status);
-
-            if ($status === 0 && file_exists($docxPath)) {
-                @unlink($htmlPath);
-                return response()->download($docxPath)->deleteFileAfterSend(true);
-            } else{
-                Log::error('DOCX conversion failed', ['output' => $output]);
-                return back()->with("error", "Could not generate docx file");
+            $pdfPath = $pdfPath = storage_path('app/public/resumes/resume-' . $user->id. $application->id . '.pdf');
+            if(!file_exists($pdfPath)){
+                $pdf = PDF::loadView('application.pdf', ["data" => $rsData])
+                    ->setPaper('a4')
+                        ->setOption('margin-top', 15)
+                        ->setOption('margin-bottom', 15)
+                        ->setOption('margin-left', 15)
+                        ->setOption('margin-right', 15)
+                        ->setOption('enable-javascript', true)
+                        ->setOption('javascript-delay', 1000) // wait for assets
+                        ->setOption('no-stop-slow-scripts', true)
+                        ->setOption('enable-smart-shrinking', true);
+                $pdf->save($pdfPath);
             }
-            
+            $docxPath = str_replace('.pdf', '.docx', $pdfPath);
+            if(!file_exists($docxPath)){
+                $cmd = sprintf(
+                    'libreoffice --headless --infilter="writer_pdf_import" --convert-to docx  --outdir %s %s 2>&1',
+                    escapeshellarg(dirname($pdfPath)),
+                    escapeshellarg($pdfPath)
+                );
+                exec($cmd, $output, $status);
+
+                if ($status === 0 && file_exists($docxPath)) {
+                    // Clean up PDF
+                } else {
+                    Log::error('DOCX conversion failed', [
+                        'output' => $output,
+                        'status' => $status,
+                        'pdfPath' => $pdfPath,
+                        'docxPath' => $docxPath
+                    ]);
+                    return back()->with('error', 'Could not generate DOCX file.');
+                }
+            }
+            return response()->download($docxPath);
         } catch (\Throwable $e) {
             // dd("HTML broke:", $html, $e->getMessage());
             Log::error('DOCS generation failed: '.$e->getMessage());
